@@ -25,7 +25,7 @@ You can change the settings in the Core Menu:
 * SNAC > Native LS-30 Adapter: Off,OnlyP1,OnlyP2,P1&P2 (maps over buttons F,E,D,C of a DB15 interface the LS-30 rotary four wire data, button A: fire, button B: grenade).
 
 Alternatively, you can wire this adapter if you already are using a DB15 SNAC adapter as the Official Mister Splitter by Antonio Villena and you don't want to build my native adapter design MCU based:
-![gamepad buttons](/docs/ls30_to_db15_adapter.png)
+![gamepad buttons](/docs/ls30_to_db15_adapter2.png)
 
 
 ## Manual installation
