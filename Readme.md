@@ -10,6 +10,7 @@ This core as beta release will be published as independet core. Finally will be 
 [https://github.com/mamedev/mame/blob/master/src/mame/drivers/snk.cpp](https://github.com/mamedev/mame/blob/master/src/mame/drivers/snk.cpp).  
 
 ## Third party cores
+* Based on [https://github.com/antoniovillena/MiSTer_DB9/blob/master/Cores/AtariST_MiSTer/sys/joydb15.v](joydb15.v) by Aitor Pelaez (NeuroRulez).
 * Daniel Wallner T80 core [jesus@opencores.org](https://opencores.org/projects/t80).
 * JTOPL FPGA Clone of Yamaha OPL hardware by Jose Tejada, @topapate [(https://github.com/jotego/jtopl)](https://github.com/jotego/jtopl).
 * Based on Tim Rudy 7400 TTL library [https://github.com/TimRudy/ice-chips-verilog](https://github.com/TimRudy/ice-chips-verilog).
