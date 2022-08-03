@@ -83,5 +83,5 @@
 		<part>05</part>
 	</rom>
 	
-<buttons default="A,B,Start,R,L,X" names="Shot,Grenade,Start1,Coin1,Pause,Service"></buttons>
+<buttons default="A,B,Start,C,L,R,X,Y,Z" names="Shot,Grenade,Start1,Coin1,Rotate Left,Rotate Right,Pause,Service"></buttons>
 </misterromdescription>
