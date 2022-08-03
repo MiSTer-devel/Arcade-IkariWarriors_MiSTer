@@ -24,7 +24,7 @@ You can change the settings in the Core Menu:
 * SNAC > DB15 Devices: Off,OnlyP1,OnlyP2,P1&P2 (fixed controls: button A: rotate left, button B: fire, button C: grenade, button D: rotate right).
 * SNAC > Native LS-30 Adapter: Off,OnlyP1,OnlyP2,P1&P2 (maps over buttons F,E,D,C of a DB15 interface the LS-30 rotary four wire data, button A: fire, button B: grenade).
 
-Alternatively, you can wire this adapter if you already are using a DB15 SNAC adapter as the Official Mister Splitter by Antonio Villena and you don't want to build my MCU design:
+Alternatively, you can wire this adapter if you already are using a DB15 SNAC adapter as the Official Mister Splitter by Antonio Villena and you don't want to build my native adapter design MCU based:
 ![gamepad buttons](/docs/ls30_to_db15_adapter.png)
 
 
@@ -36,7 +36,7 @@ The required ROM files follow the MAME naming conventions (check inside MRA for 
 
 ## Acknowledgments
 * To all Ko-fi contributors for supporting this project: __@bdlou__, __Peter Bray__, __Nat__, __Funkycochise__, __David__, __Kevin Coleman__, __Denymetanol__, __Schermobianco__, __TontonKaloun__, __Wark91__, __Dan__, __Beaps__, __Todd Gill__, __John Stringer__, __Moi__, __Olivier Krumm__, __Raymond Bielun__.
-* Thanks to @antoniovillena and @NeuroRulez for their help and patience with SNAC support for DB15.
+* Thanks to __@antoniovillena__ and __@NeuroRulez__ for their help and patience with SNAC support for DB15.
 * __@FCochise__ for helping with the rom settings of MRA files.
 * __@alanswx__ for helping me with some technical aspects related to the use of the MiSTer framework.
 * And all those who with their comments and shows of support have encouraged me to continue with this project.
