@@ -1,4 +1,7 @@
 # SNK Ikari Warriors / Victory Road (beta):
+![Ikari Warriors](/docs/ikaria-warriors-flyer.jpg)
+![Victory Road](/docs/victory_road.pjg.jpg)
+
 Ikari Warriors and Victory Road are run and gun vertical shooters developed by SNK in 1986. Victory Road is the sequel to Ikari Warriors.
 The game was released at the time when there were many Commando clones on the market. What made Ikari Warriors instantly distinct, were rotary joysticks and the allowing simultaneous play by two people.
 
