@@ -40,6 +40,7 @@ The required ROM files follow the MAME naming conventions (check inside MRA for 
 ## Acknowledgments
 * To all Ko-fi contributors for supporting this project: __@bdlou__, __Peter Bray__, __Nat__, __Funkycochise__, __David__, __Kevin Coleman__, __Denymetanol__, __Schermobianco__, __TontonKaloun__, __Wark91__, __Dan__, __Beaps__, __Todd Gill__, __John Stringer__, __Moi__, __Olivier Krumm__, __Raymond Bielun__.
 * Thanks to __@antoniovillena__ and __@NeuroRulez__ for their help and patience with SNAC support for DB15.
+* Thanks to __@Salamander329__ for his MiSTer LED screen artworks, gives a more special arcade touch to MiSTer.
 * __@FCochise__ for helping with the rom settings of MRA files.
 * __@alanswx__ for helping me with some technical aspects related to the use of the MiSTer framework.
 * And all those who with their comments and shows of support have encouraged me to continue with this project.

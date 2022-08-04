@@ -21,7 +21,7 @@
 	<switches default="FF,FF" base="16">
 		<!-- DSW1 -->
 		<dip bits="0"     name="Allow killing each other" ids="No,Yes" values="1,0"/>
-		<dip bits="1"     name="P1 & P2 Fire Buttons"   ids="Separate,Common" values="1,0"/>
+		<dip bits="1"     name="P1 and P2 Fire Buttons"   ids="Separate,Common" values="1,0"/>
 		<dip bits="3"     name="Lives"   ids="3,5" values="1,0"/>
 		 
 		<dip bits="4,5"   name="Coin A" ids="4Co/1Cr,3Co/1Cr,2Co/1Cr,1Co/1Cr" values="0,1,2,3"/>
