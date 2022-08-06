@@ -2,7 +2,7 @@
 	<name>Dogou Souken</name>
 	<mameversion>0193</mameversion>
 	<setname>dogosoke</setname>
-	<mratimestamp>20220803</mratimestamp>
+	<mratimestamp>20220806</mratimestamp>
 	<year>1986</year>
 	<manufacturer>SNK</manufacturer>
 	<category>Action</category>
@@ -85,5 +85,5 @@
 		<part>11</part>
 	</rom>
 	
-<buttons default="A,B,Start,C,L,R,X,Y,Z" names="Shot,Grenade,Start1,Coin1,Rotate Left,Rotate Right,Pause,Service"></buttons>
+<buttons default="A,B,Start,Select,L,R,X,Y" names="Shot,Grenade,Start1,Coin1,Rotate Left,Rotate Right,Pause,Service"></buttons>
 </misterromdescription>

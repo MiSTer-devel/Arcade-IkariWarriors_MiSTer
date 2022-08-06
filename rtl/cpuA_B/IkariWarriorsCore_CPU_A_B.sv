@@ -92,15 +92,13 @@ module IkariWarriorsCore_CPU_A_B
     );
 
     //sync H0 and Cen_p, Cen_n signals by adding two clock periods delay to Cen_p, Cen_n
-    // logic Cen_pr1, Cen_pr2;
-    // logic Cen_nr1, Cen_nr2;
+    logic Cen_pr1, Cen_pr2;
+    logic Cen_nr1, Cen_nr2;
 
-    // always @(posedge clk) begin
-    //     Cen_pr1 <= Cen_p;
-    //     Cen_pr2 <= Cen_pr1;
-    //     Cen_nr1 <= Cen_n;
-    //     Cen_nr2 <= Cen_nr1;
-    // end
+    always @(posedge clk) begin
+        Cen_pr1 <= Cen_p;
+        Cen_nr1 <= Cen_n;
+    end
 
     // ----------------- Z80A Cpu -----------------
     //output
@@ -152,10 +150,8 @@ module IkariWarriorsCore_CPU_A_B
         T80pa z80_E5 (
         .RESET_n(reset_n), //RESETn
         .CLK    (clk),
-        //.CEN_p  (Cen_pr1 & ~pause_cpu), //active high
-        .CEN_p  (Cen_p),
-        //.CEN_n  (Cen_nr1 & ~pause_cpu), //active high
-        .CEN_n  (Cen_n),
+        .CEN_p  (Cen_pr1 & ~pause_cpu), //active high
+        .CEN_n  (Cen_nr1 & ~pause_cpu), //active high
         .WAIT_n (1'b1),
         .INT_n  (cpuA_nINT),
         .NMI_n  (cpuA_nNMI),
@@ -342,10 +338,8 @@ module IkariWarriorsCore_CPU_A_B
         T80pa z80_E1 (
         .RESET_n(reset_n), //RESETn
         .CLK    (clk),
-        //.CEN_p  (Cen_pr1 & ~pause_cpu & BWA), //active high
-        //.CEN_n  (Cen_nr1 & ~pause_cpu & BWA), //active high
-        .CEN_p  (Cen_p & ~pause_cpu & BWA), //active high
-        .CEN_n  (Cen_n & ~pause_cpu & BWA), //active high
+        .CEN_p  (Cen_pr1 & ~pause_cpu & BWA), //active high
+        .CEN_n  (Cen_nr1 & ~pause_cpu & BWA), //active high
         //.WAIT_n (BWA),
         .WAIT_n(1'b1),
         .INT_n  (cpuB_nINT),

@@ -28,6 +28,8 @@ module IkariWarriorsCore
 
     //layer dbg interfacee
     input wire [3:0] layer_ena_dbg, //0x4 Front layer enabled, 0x2 Back1 layer enabled, 0x1 Side layer enabled
+    input wire [3:0] dbg_B1Voffset,
+    input wire swap_px,    
     //output video signals
     output logic [3:0] R,
     output logic [3:0] G,
@@ -428,6 +430,11 @@ IkariWarriorsCore_Clocks IK_clocks(
         .ioctl_addr(ioctl_addr[19:0]),
         .ioctl_wr(ioctl_wr),
         .ioctl_data(ioctl_data),
+
+        //dbg interface
+        .dbg_B1Voffset(dbg_B1Voffset),
+        .swap_px(swap_px),
+        
     	  //SDRAM interface
         .rom_addr(rom_addr),
 	     .rom_data(rom_data),

@@ -19,6 +19,9 @@ module IkariWarriorsCore_Back1(
 	input wire         [24:0] ioctl_addr,
 	input wire         [7:0] ioctl_data,
 	input wire               ioctl_wr,
+    //Debug interface
+    input wire [3:0] dbg_B1Voffset, 
+    input wire swap_px,
     //SDRAM interface
 	output        [23:0] rom_addr,
 	input         [15:0] rom_data,
@@ -255,7 +258,7 @@ module IkariWarriorsCore_Back1(
     wire BACK1_ROM2_cs = (ioctl_addr >= 25'h50_000) && (ioctl_addr < 25'h58_000) /* synthesis keep */;
     wire BACK1_ROM3_cs = (ioctl_addr >= 25'h58_000) && (ioctl_addr < 25'h60_000) /* synthesis keep */;
     
-    logic [7:0] ROM_DATA /* synthesis keep */;
+    logic [7:0] ROM_DATA;
 
     //****** START OF ROM USES SDRAM ******
     //                    2     8       4       1      1
@@ -264,13 +267,13 @@ module IkariWarriorsCore_Back1(
     logic [15:0] mask_rom_addr /* synthesis keep */;
     assign mask_rom_addr = {F2_Q[1:0],B1_Q,B1V[3:0],CE3_A2,CE3_A1};
     assign rom_addr = {8'h00, mask_rom_addr};
-    //reg sdram_sel = 0;
-    reg [16:0] old_rom_addr;
+
+    reg [15:0] old_rom_addr;
     reg [15:0] back1_romdata;
+    reg CE3_A0r;
     always_ff @(posedge clk) begin
-        // if(cen_6m)
-        //     sdram_sel <= ~sdram_sel;
         old_rom_addr <= mask_rom_addr;
+        CE3_A0r <= CE3_A0;
         if(mask_rom_addr != old_rom_addr) begin
             rom_req <= ~rom_ack;
         end
@@ -279,16 +282,13 @@ module IkariWarriorsCore_Back1(
         end
     end
 
-    logic old_CE3_A0;
-    //Check if need to swap
-    always_ff @(posedge clk) begin
-        old_CE3_A0 <= CE3_A0;
-        if (CE3_A0 & ~old_CE3_A0) begin
-            ROM_DATA <= back1_romdata[15:8];
 
+    always_comb begin
+        if (CE3_A0) begin
+            ROM_DATA = back1_romdata[15:8]; 
         end
-        else if (~CE3_A0 & old_CE3_A0) begin
-            ROM_DATA <= back1_romdata[7:0];
+        else begin
+            ROM_DATA = back1_romdata[7:0];
         end
     end
     //****** END OF ROM USES SDRAM ******
@@ -351,22 +351,106 @@ module IkariWarriorsCore_Back1(
     // end
     //****** END OF ROM USES BRAM ******
 
-    logic A2_S /* synthesis keep */;
-    assign A2_S = B1HQ[0] ^ INV;
+
 
     logic [1:0] a1_dummy;
+    logic [3:0] A1_Q;
     ttl_74174_sync A1(
         .Reset_n(VIDEO_RSTn),
         .Clk(clk),
         .Cen(A2_S),
         .Clr_n(1'b1),
         .D({F2_Q[5:2],2'b11}),
-        .Q({B1D[7:4],a1_dummy})
+        .Q({A1_Q,a1_dummy})
     );
 
-    logic [7:0] A3_Q /* synthesis preserve */;
+     logic [3:0] A1bis_Q,A1bis2_Q,A1bis3_Q,A1bis4_Q,A1bis5_Q,A1bis6_Q,A1bis7_Q,A1bis8_Q,A1bis9_Q,A1bis10_Q,A1bis11_Q,A1bis12_Q,A1bis13_Q,A1bis14_Q,A1bis15_Q;
+
+    always @(posedge clk) begin
+        A1bis2_Q <= A1_Q;
+        A1bis3_Q <= A1bis2_Q;
+        A1bis4_Q <= A1bis3_Q;
+        A1bis5_Q <= A1bis4_Q;
+        A1bis6_Q <= A1bis5_Q;
+        A1bis7_Q <= A1bis6_Q;
+        A1bis8_Q <= A1bis7_Q;
+        A1bis9_Q <= A1bis8_Q;
+        A1bis10_Q <= A1bis9_Q;
+        A1bis11_Q <= A1bis10_Q;
+        A1bis12_Q <= A1bis11_Q;
+        A1bis13_Q <= A1bis12_Q;
+        A1bis14_Q <= A1bis13_Q;
+        A1bis15_Q <= A1bis14_Q;
+    end
+
+    always_comb begin
+        case (dbg_B1Voffset)
+            4'b0000:  A1bis_Q = A1_Q;
+            4'b0001:  A1bis_Q = A1bis2_Q;
+            4'b0010:  A1bis_Q = A1bis3_Q;
+            4'b0011:  A1bis_Q = A1bis4_Q;
+            4'b0100:  A1bis_Q = A1bis5_Q;
+            4'b0101:  A1bis_Q = A1bis6_Q;
+            4'b0110:  A1bis_Q = A1bis7_Q;
+            4'b0111:  A1bis_Q = A1bis8_Q;
+            4'b1000:  A1bis_Q = A1bis9_Q;
+            4'b1001:  A1bis_Q = A1bis10_Q;
+            4'b1010:  A1bis_Q = A1bis11_Q;
+            4'b1011:  A1bis_Q = A1bis12_Q;
+            4'b1100:  A1bis_Q = A1bis13_Q;
+            4'b1101:  A1bis_Q = A1bis14_Q;
+            4'b1110:  A1bis_Q = A1bis15_Q;
+            default: A1bis_Q = A1_Q;    
+        endcase
+    end
+
+    assign B1D[7:4] = A1bis_Q;
+
+    logic [7:0] A3_Q;
     ttl_74273_sync A3(.RESETn(VIDEO_RSTn), .CLRn(1'b1), .Clk(clk), .Cen(B1HQ[0]), .D(ROM_DATA), .Q(A3_Q));
 
-    ttl_74157 #(.DELAY_RISE(0), .DELAY_FALL(0)) A2 (.Enable_bar(1'b0), .Select(A2_S),
-                .A_2D({A3_Q[7],A3_Q[3],A3_Q[6],A3_Q[2],A3_Q[5],A3_Q[1],A3_Q[4],A3_Q[0]}), .Y(B1D[3:0]));
+    logic [7:0] A3bis_Q,A3bis2_Q,A3bis3_Q,A3bis4_Q,A3bis5_Q,A3bis6_Q,A3bis7_Q,A3bis8_Q,A3bis9_Q,A3bis10_Q,A3bis11_Q,A3bis12_Q,A3bis13_Q,A3bis14_Q,A3bis15_Q;
+
+    always @(posedge clk) begin
+        A3bis2_Q <= A3_Q;
+        A3bis3_Q <= A3bis2_Q;
+        A3bis4_Q <= A3bis3_Q;
+        A3bis5_Q <= A3bis4_Q;
+        A3bis6_Q <= A3bis5_Q;
+        A3bis7_Q <= A3bis6_Q;
+        A3bis8_Q <= A3bis7_Q;
+        A3bis9_Q <= A3bis8_Q;
+        A3bis10_Q <= A3bis9_Q;
+        A3bis11_Q <= A3bis10_Q;
+        A3bis12_Q <= A3bis11_Q;
+        A3bis13_Q <= A3bis12_Q;
+        A3bis14_Q <= A3bis13_Q;
+        A3bis15_Q <= A3bis14_Q;
+    end
+
+    always_comb begin
+        case (dbg_B1Voffset)
+            4'b0000:  A3bis_Q = A3_Q;
+            4'b0001:  A3bis_Q = A3bis2_Q;
+            4'b0010:  A3bis_Q = A3bis3_Q;
+            4'b0011:  A3bis_Q = A3bis4_Q;
+            4'b0100:  A3bis_Q = A3bis5_Q;
+            4'b0101:  A3bis_Q = A3bis6_Q;
+            4'b0110:  A3bis_Q = A3bis7_Q;
+            4'b0111:  A3bis_Q = A3bis8_Q;
+            4'b1000:  A3bis_Q = A3bis9_Q;
+            4'b1001:  A3bis_Q = A3bis10_Q;
+            4'b1010:  A3bis_Q = A3bis11_Q;
+            4'b1011:  A3bis_Q = A3bis12_Q;
+            4'b1100:  A3bis_Q = A3bis13_Q;
+            4'b1101:  A3bis_Q = A3bis14_Q;
+            4'b1110:  A3bis_Q = A3bis15_Q;
+            default:  A3bis_Q = A3_Q;
+        endcase
+    end
+
+    logic A2_S;
+    assign A2_S = B1HQ[0] ^ INV;
+    ttl_74157 #(.DELAY_RISE(0), .DELAY_FALL(0)) A2 (.Enable_bar(1'b0), .Select((swap_px ? ~A2_S : A2_S)),
+                .A_2D({A3bis_Q[7],A3bis_Q[3],A3bis_Q[6],A3bis_Q[2],A3bis_Q[5],A3bis_Q[1],A3bis_Q[4],A3bis_Q[0]}), .Y(B1D[3:0]));
 endmodule

@@ -207,6 +207,8 @@ assign VIDEO_ARY = (!ar) ? (orientation  ? 8'd3 : 8'd4) : 12'd0;
 // 01234567890123456789012345678901 23456789012345678901234567890123
 // 0123456789ABCDEFGHIJKLMNOPQRSTUV 0123456789ABCDEFGHIJKLMNOPQRSTUV
 // X   XXX XXXX  XXXXXX
+	// "P4O[28:25],B1Voffset,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15;",
+	// "P4O[24],Swap B1V Nibbles,Off,On;",
 `include "build_id.v" 
 localparam CONF_STR = {
 	"Ikari Warriors;;",
@@ -219,26 +221,30 @@ localparam CONF_STR = {
 	"P1O[6:4],Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 	"P1-;",
 	"-;",
-	"P2,Other Settings;",
+	"P2,Other Video Settings;",
 	"P2-;",
 	"P2O[14],VGA Scaler,Off,On;",
 	"P2O[15],Flip,Off,On;",
-	"P2O[16],Side Layer,On,Off;",
-	"P2O[17],Back Layer,On,Off;",
-	"P2O[18],Front1 Layer,On,Off;",
-	"P2O[19],Front2 Layer,On,Off;",
 	"P2-;",
 	"P3,SNAC;",
 	"P3-;",
 	"P3O[21:20],DB15 Devices,Off,OnlyP1,OnlyP2,P1&P2;",
 	"P3O[23:22],Native LS-30 Adapter,Off,OnlyP1,OnlyP2,P1&P2;",
 	"P3-;",
+	"P4,Debug;",
+	"P4-;",
+	"P4O[16],Side Layer,On,Off;",
+	"P4O[17],Back Layer,On,Off;",
+	"P4O[18],Front1 Layer,On,Off;",
+	"P4O[19],Front2 Layer,On,Off;",
+	"P4-;",
+	"H1O[30:29],Rotary Speed,Normal,Slow,Fast,Very Fast;",
 	"DIP;",
 	"-;",
 	"T[0],Reset;",
 	"R[0],Reset and close OSD;",
 	"J1,Shot,Grenade,Start1,Coin1,Rotate Left,Rotate Right,Pause,Service;",
-	"jn,A,B,Start,C,L,R,X,Y,Z;",
+	"jn,A,B,Start,Select,L,R,X,Y;",
 	"DEFMRA,IkariWarriors_JP.mra;",
 	"V,v",`BUILD_DATE 
 };
@@ -263,7 +269,11 @@ always @(posedge clk_53p6) begin
 	layer_ena_dbg[3] <= ~status[19]; //FRONT2
 end
 
-
+// wire [3:0] dbg_B1Voffset = status[28:25];
+//This fixed background offset by 1 pixel
+wire [3:0] dbg_B1Voffset = 4'b0011;
+//wire swap_px = status[24];
+wire swap_px = 1'b1;
 //wire forced_scandoubler;
 
 wire  [1:0] buttons;
@@ -523,6 +533,8 @@ IkariWarriorsCore IK_Core
 	.ioctl_wr(ioctl_wr && rom_download),
 	.ioctl_data(ioctl_dout),
 	.layer_ena_dbg(layer_ena_dbg),
+	.dbg_B1Voffset(dbg_B1Voffset),
+	.swap_px(swap_px),
 	//SDRAM interface
 	.rom_addr(rom_addr),
 	.rom_data(sdram_data),
@@ -651,7 +663,17 @@ wire m_rot_left2, m_rot_right2;
 reg [22:0] rotary_div = 23'd0;
 reg [3:0] rotary1 = 4'd11;
 reg [3:0] rotary2 = 4'd11;
-wire rotary_en = !rotary_div;
+wire [1:0] rot_speed =status[30:29];
+logic rotary_en;
+
+always_comb begin
+	case(rot_speed)
+		2'b00: rotary_en = !rotary_div[22:0]; //Normal
+		2'b01: rotary_en = !rotary_div;       //Slow
+		2'b10: rotary_en = !rotary_div[21:0]; //Fast
+		2'b11: rotary_en = !rotary_div[20:0]; //Very Fast
+	endcase
+end
 always_ff @(posedge clk_53p6) begin
 	rotary_div <= rotary_div + 23'd1;
 	if(rotary_en) begin
