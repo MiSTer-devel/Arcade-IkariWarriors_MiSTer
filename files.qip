@@ -7,11 +7,11 @@ set_global_assignment -name VERILOG_FILE rtl/joy_db15.v
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/ttl/n9bit_counter.sv
 set_global_assignment -name VERILOG_FILE rtl/joy_10btn.v
 set_global_assignment -name VERILOG_FILE rtl/ttl/helper.v
-set_global_assignment -name SDC_FILE "Arcade-IkariWarriors_MiSTer.sdc"
+set_global_assignment -name SDC_FILE "Arcade-IkariWarriors.sdc"
 set_global_assignment -name VERILOG_FILE rtl/ram/SRAM_sync_noinit.v
 set_global_assignment -name CDF_FILE jtag.cdf
 set_global_assignment -name VERILOG_FILE rtl/ram/SRAM_dual_sync.v
-set_global_assignment -name SYSTEMVERILOG_FILE "Arcade-IkariWarriors_MiSTer.sv"
+set_global_assignment -name SYSTEMVERILOG_FILE "Arcade-IkariWarriors.sv"
 set_global_assignment -name VERILOG_FILE rtl/ttl/DFF_pseudoAsyncClrPre2.v
 set_global_assignment -name VERILOG_FILE rtl/ttl/DFF_pseudoAsyncClrPre.v
 set_global_assignment -name VHDL_FILE rtl/ram/dpram_dc.vhd
