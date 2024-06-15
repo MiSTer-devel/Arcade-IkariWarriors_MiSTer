@@ -1,6 +1,8 @@
-# SNK Ikari Warriors / Victory Road (beta):
+# SNK Ikari Warriors / Victory Road:
 ![Ikari Warriors](/docs/ikaria-warriors-flyer.jpg)
 ![Victory Road](/docs/victory_road.pjg.jpg)
+
+* Update [15/06/24] Added GRS Superjoystick support for rotative joystick control. See notes about configuration.
 
 Ikari Warriors and Victory Road are run and gun vertical shooters developed by SNK in 1986. Victory Road is the sequel to Ikari Warriors.
 The game was released at the time when there were many Commando clones on the market. What made Ikari Warriors instantly distinct, were rotary joysticks and the allowing simultaneous play by two people.
@@ -30,6 +32,14 @@ You can change the settings in the Core Menu:
 Alternatively, you can wire this adapter if you already are using a DB15 SNAC adapter as the Official Mister Splitter by Antonio Villena and you don't want to build my native adapter design MCU based:
 ![gamepad buttons](/docs/ls30_to_db15_adapter2.png)
 
+### GRS Superjoystick support
+Now you can use the GRS Superjoystick specifically designed for SNK games that uses LS-30 rotative joystick. 
+Before to use it you need to plug the game controller into a PC Windows machine, install and execute the TS-RJConfigurator utility:
+https://cdn.shopifycdn.net/s/files/1/0606/7516/2341/files/TS-RJConfigurator-V1.04.9.rar
+
+You need to adjust MODE pressing the button on the GRS Super Joystick until you get the button GREEN lit and set to 12 WAY mode  pressing WAY button until the button is blinking (follow the tsticks user manual procedure for this). Now assign in the `Keyboard` section of TS-RJConfigurator Spinner Left to `Left Key` and Spinner Right to `Right Key` if you want to use the GRS Super Joystick as Player1 or Spinner Left to `C Key` and Spinner Right to `V` if you want to use the GRS Super Joystick as Player2 in MiSTer. Now press `Save Configuration` button and now you can deattach the controller from PC and attach it to MiSTer. You need to assign your GRS game controller as Player1 or Player2 based on the previous configuration done in TS-RJConfigurator.
+you need to enable it in the core menu as: `SNAC & GRS Super Joystick > Use GRS Super JoyStick: ON`. Now the rotate left, rotate righ action will be assigned to the selected player.
+Regardless of the settings made for the joystick buttons, you should ignore the assignments made for the left and right rotation keys made for generic controllers.
 
 ## Manual installation
 Rename the Arcade-IkariWarriors_XXXXXXXX.rbf file to IkariWarriors_XXXXXXXX.rbf and copy to the SD Card to the folder  /media/fat/_Arcade/cores and the .MRA files to /media/fat/_Arcade.
