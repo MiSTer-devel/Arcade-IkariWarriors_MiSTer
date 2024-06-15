@@ -33,6 +33,8 @@ Alternatively, you can wire this adapter if you already are using a DB15 SNAC ad
 ![gamepad buttons](/docs/ls30_to_db15_adapter2.png)
 
 ### GRS Superjoystick support
+https://thunderstickstudio.com/products/grs-super-joystick
+
 Now you can use the GRS Superjoystick specifically designed for SNK games that uses LS-30 rotative joystick. 
 Before to use it you need to plug the game controller into a PC Windows machine, install and execute the TS-RJConfigurator utility:
 https://cdn.shopifycdn.net/s/files/1/0606/7516/2341/files/TS-RJConfigurator-V1.04.9.rar
