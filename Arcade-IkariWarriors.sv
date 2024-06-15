@@ -232,7 +232,7 @@ localparam CONF_STR = {
 	"P3-;",
 	"P3O[21:20],DB15 Devices,Off,OnlyP1,OnlyP2,P1&P2;",
 	"P3O[23:22],Native LS-30 Adapter,Off,OnlyP1,OnlyP2,P1&P2;",
-	"P3O[24],Use GRS Super JoyStick (Keystroke Mode), Off, On",
+	"P3O[24],Use GRS Super JoyStick (Keystroke Mode), Off, On;",
 	"P3-;",
 	"P4,Debug;",
 	"P4-;",
@@ -701,16 +701,19 @@ wire [1:0] rot_speed =status[30:29];
 logic rotary_en;
 
 always_comb begin
-	case(rot_speed)
-		2'b00: rotary_en = !rotary_div[22:0]; //Normal
-		2'b01: rotary_en = !rotary_div;       //Slow
-		2'b10: rotary_en = !rotary_div[21:0]; //Fast
-		2'b11: rotary_en = !rotary_div[20:0]; //Very Fast
-	endcase
+	if (USE_GRS_SJOY) rotary_en = !rotary_div[20:0];
+	else begin
+		case(rot_speed)
+			2'b00: rotary_en = !rotary_div[22:0]; //Normal
+			2'b01: rotary_en = !rotary_div;       //Slow
+			2'b10: rotary_en = !rotary_div[21:0]; //Fast
+			2'b11: rotary_en = !rotary_div[20:0]; //Very Fast
+		endcase
+	end
 end
 always_ff @(posedge clk_53p6) begin
 	rotary_div <= rotary_div + 23'd1;
-	if(rotary_en || USE_GRS_SJOY) begin
+	if(rotary_en) begin
 		if(m_rot_left1 || btn_left_1) begin
 			if(rotary1 != 4'd11)
 				rotary1 <= rotary1 + 4'd1;
