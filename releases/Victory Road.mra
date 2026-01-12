@@ -9,7 +9,7 @@
 	<rbf>IkariWarriors</rbf>
 	<about author="RndMnkIII" twitter="@RndMnkIII"></about>
 	<resolution>16.1785kHz</resolution>
-	<rotation>vertical (ccw)</rotation>
+	<rotation>vertical (cw)</rotation>
 	<players>2</players>
 	<joystick>8-way</joystick>
 	<special_controls>Rotary</special_controls>
