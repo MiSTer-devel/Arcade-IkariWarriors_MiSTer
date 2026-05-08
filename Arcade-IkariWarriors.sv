@@ -474,7 +474,7 @@ wire no_rotate = orientation | direct_video;
 wire video_rotated;
 wire flip = status[15];
 
-screen_rotate screen_rotate (.*);
+screen_rotate screen_rotate (.*, .flip(1'b0));
 
 arcade_video #(288,24) arcade_video
 (
@@ -534,6 +534,7 @@ IkariWarriorsCore IK_Core
 	.PLAYER1(PLAYER1),
 	.PLAYER2(PLAYER2),
 	.GAME(game), //default ASO (ASO,Alpha Mission, Arian Mission)
+	.flip(flip),
 	//hps_io rom interface
 	.ioctl_addr(ioctl_addr[24:0]),
 	.ioctl_wr(ioctl_wr && rom_download),

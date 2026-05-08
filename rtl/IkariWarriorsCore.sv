@@ -14,6 +14,7 @@ module IkariWarriorsCore
     input wire [15:0] PLAYER2,
     input wire [7:0] GAME,
     input wire [15:0] DSW,
+    input wire flip,
     output wire player_ctrl_clk,
     //hps_io rom interface
 	input wire         [24:0] ioctl_addr,
@@ -108,6 +109,10 @@ module IkariWarriorsCore
     //Video Attributes
     logic INV;  //Flip screen (invert)
     logic INVn; //Negated flip screen
+    logic INV_int;
+    logic INVn_int;
+    assign INV  = INV_int ^ flip;
+    assign INVn = INVn_int ^ flip;
     logic B1X8; //BACK1 tile layer scroll X MSB
     logic B1Y8; //BACK1 tile layer scroll Y MSB
     logic F1X8;  //FRONT1 tile layer scroll X MSB
@@ -338,8 +343,8 @@ IkariWarriorsCore_Clocks IK_clocks(
 
         //Register BSET: B1X, B1Y MSBs, INV signal
         .BSET(BSET),
-        .INV(INV), //Flip screen
-        .INVn(INVn), //in real PCB use LS368 not buffer
+        .INV(INV_int), //Flip screen
+        .INVn(INVn_int), //in real PCB use LS368 not buffer
         .B1X8(B1X8),
         .B1Y8(B1Y8),
 
@@ -413,8 +418,19 @@ IkariWarriorsCore_Clocks IK_clocks(
     );
 
     logic [7:0] B1D;
+    logic [7:0] B1D_raw;
     //assign B1D[7:4] = BACK1_COLOR_BANK;
     logic [7:0] back1_vout;
+    localparam signed [8:0] B1_FLIP_X_ADJ = -9'sd40;
+    localparam signed [8:0] B1_FLIP_H_ADJ =  9'sd16;
+    wire signed [9:0] b1x_sum = $signed({1'b0, X}) + B1_FLIP_X_ADJ;
+    wire [7:0] X_back1_adj    = INV ? b1x_sum[7:0] : X;
+    wire [8:0] b1h_coord = {H[8], Y[7:4], H[3:0]};
+    wire signed [9:0] b1h_sum = $signed({1'b0, b1h_coord}) + B1_FLIP_H_ADJ;
+    wire [8:0] b1h_adj = INV ? b1h_sum[8:0] : b1h_coord;
+    wire       H8_back1_adj = b1h_adj[8];
+    wire [3:0] Y_back1_adj  = b1h_adj[7:4];
+    wire [3:0] H_back1_adj  = b1h_adj[3:0];
     IkariWarriorsCore_Back1 IK_back1(
         .VIDEO_RSTn(VIDEO_RSTn),
         .clk(i_clk),
@@ -449,13 +465,13 @@ IkariWarriorsCore_Clocks IK_clocks(
         //VIDEO/CPU Selector
         .V_C(V_C),
         //B address
-        .H8(H[8]),
-        .Y(Y[7:4]), //Y[7:4] in schematics
-        .H3(H[3]),
-        .H2(H[2]),
-        .H1(H[1]),
-        .H0(H[0]),
-        .X(X), 
+        .H8(H8_back1_adj),
+        .Y(Y_back1_adj), //Y[7:4] in schematics
+        .H3(H_back1_adj[3]),
+        .H2(H_back1_adj[2]),
+        .H1(H_back1_adj[1]),
+        .H0(H_back1_adj[0]),
+        .X(X_back1_adj), 
         .VA(VA[10:0]),
         .BACK1_VRAM_CSn(BACK1_VRAM_CSn),
         
@@ -474,7 +490,7 @@ IkariWarriorsCore_Clocks IK_clocks(
         .VLK(VLK),
         //input wire H3
 
-        .B1D(B1D[7:0])
+        .B1D(B1D_raw[7:0])
     );
     
     logic [7:0] F1D;
@@ -483,6 +499,11 @@ IkariWarriorsCore_Clocks IK_clocks(
     logic [8:0] SPR_1X;
     logic [7:0] front1_vout;
 
+    localparam signed [8:0] F1_FLIP_V_ADJ = -9'sd40;
+    wire [8:0] F1V_adj = INV ? (F1V + F1_FLIP_V_ADJ) : F1V;
+    localparam [7:0] FLIP_B1_EDGE_MASK = 8'd40;
+    wire b1_flip_mask = INV & (X < FLIP_B1_EDGE_MASK);
+    assign B1D = b1_flip_mask ? 8'hFF : B1D_raw;
     IkariWarriorsCore_Front1 IK_front1(
         .VIDEO_RSTn(VIDEO_RSTn),
         .clk(i_clk),
@@ -508,7 +529,7 @@ IkariWarriorsCore_Clocks IK_clocks(
         .VWE(VWE),
         //clocking
         .FH(FH[8:4]),
-        .F1V(F1V),
+        .F1V(F1V_adj),
         .FN(FN[5:0]),
         .LC(LC),
         .VLK(VLK),
@@ -526,6 +547,9 @@ IkariWarriorsCore_Clocks IK_clocks(
     logic [7:0] F2D;
     logic [8:0] SPR_2Y;
     logic [7:0] front2_vout;
+    localparam signed [8:0] F2_FLIP_V_ADJ  = -9'sd40;
+    wire signed [9:0] f2v_sum = $signed({1'b0, F2V}) + F2_FLIP_V_ADJ;
+    wire [8:0] F2V_adj        = INV ? f2v_sum[8:0] : F2V;
 
     IkariWarriorsCore_Front2 IK_front2(
         .VIDEO_RSTn(VIDEO_RSTn),
@@ -551,7 +575,7 @@ IkariWarriorsCore_Clocks IK_clocks(
         .VWE(VWE),
         //clocking
         .FH(FH[8:4]), //FH8,FH7,FH6,FH5,FH4
-        .F2V(F2V),
+        .F2V(F2V_adj),
         .LC(LC),
         .VLK(VLK),
         //The Front2 Sprite layer uses the two FCK clocks
@@ -567,8 +591,13 @@ IkariWarriorsCore_Clocks IK_clocks(
 
 
     logic [7:0] L1D_BUF;
-    logic FYocho1;
-    assign FYocho1 = F1Y8;
+//    logic FYocho1;
+    localparam signed [8:0] F1_FLIP_LB_ADJ = -9'sd199;
+    wire [8:0] F1Y_combined = {F1Y8, F1Y};
+    wire [8:0] F1Y_flip     = F1Y_combined + F1_FLIP_LB_ADJ;
+    wire [7:0] F1Y_adj      = INV ? F1Y_flip[7:0] : F1Y;
+    wire       F1Y8_adj     = INV ? F1Y_flip[8]   : F1Y8;
+//    assign FYocho1 = F1Y8;
     IkariWarriorsCore_LineBuffer IK_linebuf1(
         //inputs:
         .VIDEO_RSTn(VIDEO_RSTn),
@@ -584,17 +613,23 @@ IkariWarriorsCore_Clocks IK_clocks(
         .FCK_LDn(~(F1CK & ~LD)),
         .FLY(FL_1Y), //comes from FRONT1 output
         .HLD(HLDn),
-        .FY8(FYocho1),
-        .FY(F1Y),
+        .FY8(F1Y8_adj),
+        .FY(F1Y_adj),
         .INVn(INVn),
         //output:
         .LD_BUF(L1D_BUF)
     );
 
-
+    localparam signed [8:0] F2_FLIP_LB_ADJ = -9'sd200;
+    wire [8:0]        f2y_lb_coord = {F2Y8, F2Y};
+    wire signed [9:0] f2y_lb_sum   = $signed({1'b0, f2y_lb_coord}) + F2_FLIP_LB_ADJ;
+    wire [8:0]        f2y_lb_adj9  = INV ? f2y_lb_sum[8:0] : f2y_lb_coord;
+    wire              F2Y8_lb_adj  = f2y_lb_adj9[8];
+    wire [7:0]        F2Y_lb_adj   = f2y_lb_adj9[7:0];
+	 
     logic [7:0] L2D_BUF;
-    logic FYocho2;
-    assign FYocho2 = F2Y8;
+//    logic FYocho2;
+//    assign FYocho2 = F2Y8;
     IkariWarriorsCore_LineBuffer IK_linebuf2(
         //inputs:
         .VIDEO_RSTn(VIDEO_RSTn),
@@ -610,8 +645,8 @@ IkariWarriorsCore_Clocks IK_clocks(
         .FCK_LDn(~(F2CK & F1CK & ~LD)),
         .FLY(SPR_2Y), //comes from FRONT2 output
         .HLD(HLDn),
-        .FY8(FYocho2),
-        .FY(F2Y),
+        .FY8(F2Y8_lb_adj),
+        .FY(F2Y_lb_adj),
         .INVn(INVn),
         //output:
         .LD_BUF(L2D_BUF)
